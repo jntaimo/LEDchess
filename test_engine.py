@@ -102,10 +102,19 @@ def search(side):
 
                         captured_piece = board[captured_square]
 
+                        if captured_piece & side: #can't capture your own pieces
+                            break
+
+                        if (piece_type < 3 and (not (step_vector & 7)) != (not captured_piece)):
+                            break
                         print(notation[source_square], notation[target_square], sep = '')
                         #fake capture for leapers
                         captured_piece += (piece_type < 5)
-                print()
+
+                        #unfake capture for double pawn move
+                        if (piece_type < 3 and (6 * side + (target_square & 0x70) == 0x80)):
+                            captured_piece -= 1
+                
         index += 1
 
 search(white)
