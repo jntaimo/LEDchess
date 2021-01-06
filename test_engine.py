@@ -24,6 +24,8 @@
 # 10000 | 110 = 10110 22 black rook
 # 10000 | 111 = 10111 23 black queen
 
+white = 8   #  1000
+black = 16  # 10000
 board = [
     22, 20, 21, 23, 19, 21, 20, 22, 0,  0,  0,  0,  0,  0,  0,  0,
     18, 18, 18, 18, 18, 18, 18, 18, 0,  0,  0,  0,  0,  0,  0,  0,
@@ -35,15 +37,14 @@ board = [
     14, 12, 13, 15, 11, 13, 12, 14, 0,  0,  0,  0,  0,  0,  0,  0,
 ]
 notation = [
-    'a8', 'b8', 'c8', 'd8', 'f8', 'g8', 'h8', 'i8', 'j8', 'k8', 'l8', 'm8', 'n8', 'o8', 'p8',
-    'a7', 'b7', 'c7', 'd7', 'f7', 'g7', 'h7', 'i7', 'j7', 'k7', 'l7', 'm7', 'n7', 'o7', 'p7',
-    'a6', 'b6', 'c6', 'd6', 'f6', 'g6', 'h6', 'i6', 'j6', 'k6', 'l6', 'm6', 'n6', 'o6', 'p6',
-    'a5', 'b5', 'c5', 'd5', 'f5', 'g5', 'h5', 'i5', 'j5', 'k5', 'l5', 'm5', 'n5', 'o5', 'p5',
-    'a4', 'b4', 'c4', 'd4', 'f4', 'g4', 'h4', 'i4', 'j4', 'k4', 'l4', 'm4', 'n4', 'o4', 'p4',
-    'a3', 'b3', 'c3', 'd3', 'f3', 'g3', 'h3', 'i3', 'j3', 'k3', 'l3', 'm3', 'n3', 'o3', 'p3',
-    'a2', 'b2', 'c2', 'd2', 'f2', 'g2', 'h2', 'i2', 'j2', 'k2', 'l2', 'm2', 'n2', 'o2', 'p2',
-    'a1', 'b1', 'c1', 'd1', 'f1', 'g1', 'h1', 'i1', 'j1', 'k1', 'l1', 'm1', 'n1', 'o1', 'p1',
-
+	'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8',   'i8', 'j8', 'k8', 'l8', 'm8', 'n8', 'o8', 'p8',
+    'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7',   'i7', 'j7', 'k7', 'l7', 'm7', 'n7', 'o7', 'p7',
+    'a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6',   'i6', 'j6', 'k6', 'l6', 'm6', 'n6', 'o6', 'p6',
+    'a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5',   'i5', 'j5', 'k5', 'l5', 'm5', 'n5', 'o5', 'p5',
+    'a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4',   'i4', 'j4', 'k4', 'l4', 'm4', 'n4', 'o4', 'p4',
+    'a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3',   'i3', 'j3', 'k3', 'l3', 'm3', 'n3', 'o3', 'p3',
+    'a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2',   'i2', 'j2', 'k2', 'l2', 'm2', 'n2', 'o2', 'p2',
+    'a2', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1',   'i1', 'j1', 'k1', 'l1', 'm1', 'n1', 'o1', 'p1',
 ]
 move_offsets = [
     15,  16,  17,   0,                              # black pawns
@@ -73,11 +74,11 @@ def search(side):
     index = 0
     
     #loop over board squares
-    while (index<128):
+    while index<128:
         if (index & 0x88) == 0: #makes sure the piece is on the board
             piece = board[index]
 
-            if (piece & side): #if the piece is on the right side
+            if piece & side: #if the piece is on the right side
                 piece_type = piece & 7
                 directions = move_offsets[piece_type + 30] #+30 moves it o the starting indices in move_offsets
                 directions += 1
@@ -85,10 +86,26 @@ def search(side):
                 #loop over more offsets
                 while move_offsets[directions]:
                     step_vector = move_offsets[directions]
-                    print(step_vector,end = ' ')
                     directions += 1 
+
+                    source_square = index 
+                    target_square = source_square
+
+                    captured_piece = 0
+                    # loop over slider ray
+                    while captured_piece == 0:
+                        target_square += step_vector
+                        captured_square = target_square
+
+                        if target_square & 0x88: #if it's off the board
+                            break
+
+                        captured_piece = board[captured_square]
+
+                        print(notation[source_square], notation[target_square], sep = '')
+                        #fake capture for leapers
+                        captured_piece += (piece_type < 5)
                 print()
         index += 1
-white = 8   #  1000
-black = 16  # 10000
-search(black)
+
+search(white)
