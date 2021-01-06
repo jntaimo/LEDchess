@@ -46,13 +46,14 @@ notation = [
 
 ]
 move_offsets = [
-    15,  16,  17,   0,
-    15, -16, -17,   0,
-     1,  16,  -1, -16,   0,
-     1,  16,  -1, -16,  15, -15,  17, -17,   0, 
-    14, -14,  18, -18,  31, -31,  33, -33,   0,
-     3,  -1,  12,  21,  16,  7, 12  
-]
+    15,  16,  17,   0,                              # black pawns
+    15, -16, -17,   0,                              # white pawns
+     1,  16,  -1, -16,   0,                         # rooks
+     1,  16,  -1, -16,  15, -15,  17, -17,   0,     # queens, kings and bishops
+    14, -14,  18, -18,  31, -31,  33, -33,   0,     # knights
+     3,  -1,  12,  21,  16,  7, 12                  # starting indices for each piece type in order
+                                                    #   white pawns, black pawns, kings, knights, bishops, rooks, queens
+]               
 pieces = ".-pknbrq-P-KNBRQ"
 
 def print_board():
@@ -76,9 +77,18 @@ def search(side):
         if (index & 0x88) == 0: #makes sure the piece is on the board
             piece = board[index]
 
-            if (piece & side):
-                print(pieces[piece & 15], end = ' ')
+            if (piece & side): #if the piece is on the right side
+                piece_type = piece & 7
+                directions = move_offsets[piece_type + 30] #+30 moves it o the starting indices in move_offsets
+                directions += 1
+
+                #loop over more offsets
+                while move_offsets[directions]:
+                    step_vector = move_offsets[directions]
+                    print(step_vector,end = ' ')
+                    directions += 1 
+                print()
         index += 1
 white = 8   #  1000
 black = 16  # 10000
-search(white)
+search(black)
