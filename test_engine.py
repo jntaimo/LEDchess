@@ -107,7 +107,22 @@ def search(side):
 
                         if (piece_type < 3 and (not (step_vector & 7)) != (not captured_piece)):
                             break
-                        print(notation[source_square], notation[target_square], sep = '')
+                        
+                        #make move
+                        board[captured_square] = 0
+                        board[source_square] = 0
+                        board[target_square] = piece
+
+                        #pawn promotion
+                        if piece_type < 3:
+                            if (target_square + step_vector + 1 & 0x80):
+                                board[target_square] |= 7
+                        print_board()
+                        #take back
+                        board[target_square] = 0
+                        board[source_square] = piece
+                        board[captured_square] = captured_piece
+
                         #fake capture for leapers
                         captured_piece += (piece_type < 5)
 
