@@ -10,29 +10,30 @@ const char black = 16;
 NeoPixelBrightnessBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount,PixelPin);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 
-RgbwColor bpawn(0, 255, 255 , 0);
-RgbwColor wpawn(0, 255, 255, bpawn.CalculateBrightness());
+RgbwColor bpawn(128, 200, 0 , 90);
+RgbwColor wpawn(0, 255, 140, 0);
 
-RgbwColor bking(0, 0, 255, 0);
-RgbwColor wking(0, 0, 255, bking.CalculateBrightness()*1.5);
+RgbwColor bking(255, 0, 0, 0);
+RgbwColor wking(255, 30, 255, 100);
 
-RgbwColor bknight(255, 0, 255, 0);
-RgbwColor wknight(255, 0, 255, bknight.CalculateBrightness()*1.5);
+RgbwColor bknight(0, 255, 0, 0);
+RgbwColor wknight(28, 102, 255, 0);
 
-RgbwColor bbishop(255, 0, 0, 0);
-RgbwColor wbishop(255, 0, 0, bbishop.CalculateBrightness()*1.5);
+RgbwColor bbishop(255, 255, 0, 0);
+RgbwColor wbishop(0, 200, 255, 0);
 
-RgbwColor brook(255, 126, 0, 0);
-RgbwColor wrook(255, 126, 0, brook.CalculateBrightness()*1.5);
+RgbwColor brook(255, 170, 0, 0);
+RgbwColor wrook(179, 0, 119, 0);
 
-RgbwColor bqueen(255, 255, 0, 0);
-RgbwColor wqueen(255, 255, 0, bqueen.CalculateBrightness()*1.5);
+RgbwColor bqueen(200, 0, 0, 100);
+RgbwColor wqueen(128, 0, 200, 0);
 
 RgbwColor empty(0);
 RgbwColor none(0,0,0, 255);
 
-RgbwColor piece_colors[] =   {empty, none, wpawn, wking, wknight, wbishop, wrook, wqueen, 
-                none, bpawn, none, bking, bknight, bbishop, brook, bqueen};
+RgbwColor checker_square(0, 0, 0, 255);
+RgbwColor piece_colors[] =   {empty, none, bpawn, bking, bknight, bbishop, brook, bqueen, 
+                                none, wpawn, none, wking, wknight, wbishop, wrook, wqueen};
 
 char pieces[] = ".-pknbrq-P-KNBRQ";
 char board[129] = {
@@ -81,7 +82,16 @@ void display_board(){
         if((i & 0x88) == 0){
             piece = board[i];
             color = piece_colors[piece & 15];
-            strip.SetPixelColor(strip_index(i), color);
+            uint8_t strip_i = strip_index(i);
+            //adds checkers on empty squares
+            if(color == empty){
+                strip.SetPixelColor(strip_i, (strip_i%2)? RgbwColor::LinearBlend(color,checker_square,0.10):color);
+            } else {
+                strip.SetPixelColor(strip_i,color);
+            }
+            
+            //without checkers
+            
             ++i;
         } else i+=8;
     }
@@ -94,15 +104,7 @@ uint8_t strip_index(uint8_t index){
     return 8*row + ((row%2)?(7-col):col); //even rows are reversed
 }
 
-void checkerboard(){
-    for(uint8_t i = 0; i>64; ++i){
-        if(i%2){
-            strip.GetPixelColor(i).Darken(50);
-        } else {
-        }
-        
-    }
-}
+
 void search(char side){
     uint8_t index = 0;
     //loop over board squares
@@ -178,13 +180,11 @@ void setup(){
     Serial.println("Initializing...");
     Serial.flush();
     for(uint8_t i=0; i<14; ++i){
-        //piece_colors[i].Darken(100);
         piece_colors[i]  = colorGamma.Correct(piece_colors[i]);
     }
-    strip.SetBrightness(70);
+    strip.SetBrightness(50);
     strip.Begin();
     display_board();
-    //print_board();
 }
 
 void loop(){
