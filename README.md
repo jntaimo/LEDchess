@@ -12,7 +12,7 @@ This is a twist on the ancient game of chess, where the pieces are replaced with
 ## General info
 * ### to do
 ## Technologies
-*### to do
+* ### to do
 ## Features
 * ### to do
 ## Sources
