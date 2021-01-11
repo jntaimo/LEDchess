@@ -9,22 +9,22 @@ const char black = 16;
 NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount,PixelPin);
 NeoGamma<NeoGammaTableMethod> colorGamma;
 
-RgbwColor bpawn(0, 150, 150 , 0);
+RgbwColor bpawn(0, 200, 200 , 0);
 RgbwColor wpawn(0, 150, 150, bpawn.CalculateBrightness()*1.5);
 
-RgbwColor bking(0, 0, 150, 0);
+RgbwColor bking(0, 0, 200, 0);
 RgbwColor wking(0, 0, 150, bking.CalculateBrightness()*1.5);
 
-RgbwColor bknight(150, 0, 150, 0);
+RgbwColor bknight(200, 0, 200, 0);
 RgbwColor wknight(150, 0, 150, bknight.CalculateBrightness()*1.5);
 
-RgbwColor bbishop(150, 0, 0, 0);
+RgbwColor bbishop(200, 0, 0, 0);
 RgbwColor wbishop(150, 0, 0, bbishop.CalculateBrightness()*1.5);
 
-RgbwColor brook(0, 150, 0, 0);
+RgbwColor brook(0, 200, 0, 0);
 RgbwColor wrook(0, 150, 0, brook.CalculateBrightness()*1.5);
 
-RgbwColor bqueen(150, 150, 0, 0);
+RgbwColor bqueen(200, 200, 0, 0);
 RgbwColor wqueen(150, 150, 0, bqueen.CalculateBrightness()*1.5);
 
 RgbwColor empty(0);
@@ -68,24 +68,29 @@ void print_board(){
             i += 8;
         }
     }
+    Serial.println();
 }
 
 void display_board(){
     uint8_t i = 0;
     char piece = 0;
     RgbwColor color;
-    uint8_t strip_i = 0;
     while(i < 128){
         //on the board
         if((i & 0x88) == 0){
             piece = board[i];
             color = piece_colors[piece & 15];
-            strip.SetPixelColor(strip_i, color);
-            ++strip_i;
+            strip.SetPixelColor(strip_index(i), color);
             ++i;
         } else i+=8;
     }
     strip.Show();
+}
+
+uint8_t strip_index(uint8_t index){
+    uint8_t row = index / 16;
+    uint8_t col = index % 16;
+    return 8*row + ((row%2)?(7-col):col); //even rows are reversed
 }
 
 void search(char side){
@@ -135,7 +140,7 @@ void search(char side){
                         }
                         print_board();
                         display_board();
-                        delay(500);
+                        delay(1000);
                         //take back move
                         board[target_square] = 0;
                         board[source_square] = piece;
