@@ -20,8 +20,8 @@
 #define W while
 #define K(A,B) *(int*)(T+A+(B&8)+S*(B&7))
 #define J(A) K(y+A,b[y])-K(x+A,u)-K(H+A,t)
-
-#define U (1<<24)
+//#define U 
+#define U (1<<20)
 struct _ {int K,V;char X,Y,D;} A[U];           /* hash table, 16M+8 entries*/
 
 int M=136,S=128,I=8e3,Q,O,K,N,R,J,Z,k=16,*p,c[9]; /* M=0x88                */
@@ -73,7 +73,6 @@ int q,l,e,E,z,n;        /* (q,l)=window, e=current eval. score, E=e.p. sqr.*/
       i=37*w[t&7]+(t&192);                     /* value of capt. piece t   */
       m=i<0?I:m;                               /* K capture                */
       if(m>=l&d>1)goto C;                      /* abort on fail high       */
-
       v=d-1?e:i-p;                             /* MVV/LVA scoring          */
       if(d-!t>1)                               /* remaining depth          */
       {v=p<6?b[x+8]-b[y+8]:0;                  /* center positional pts.   */
@@ -120,7 +119,7 @@ C:if(m>I-M|m<M-I)d=98;                         /* mate holds to any depth  */
   if(a->D<99)                                  /* protect game history     */
    a->K=Z,a->V=m,a->D=d,                       /* always store in hash tab */
    a->X=X|8*(m>q)|S*(m<l),a->Y=Y;              /* move, type (bound/exact),*/
-/*if(z)printf("%2d ply, %9d searched, score=%6d by %c%c%c%c\n",d-1,N-S,m,
+if(z)printf("%2d ply, %9d searched, score=%6d by %c%c%c%c\n",d-1,N-S,m,
      'a'+(X&7),'8'-(X>>4),'a'+(Y&7),'8'-(Y>>4&7)); /* uncomment for Kibitz */
  }                                             /*    encoded in X S,8 bits */
  k^=24;                                        /* change sides back        */
@@ -141,6 +140,8 @@ main()
   p=c;W((*p++=getchar())>10);                        /* read input line    */
   K=I;                                               /* invalid move       */
   if(*c-10)K=*c-16*c[1]+799,L=c[2]-16*c[3]+799;      /* parse entered move */
-  D(-I,I,Q,O,1,3);                                   /* think or check & do*/
+  printf("%d\n",K);
+  printf("%d\n",L);
+  D(-I,I,Q,O,1,5);                                   /* think or check & do*/
  }
 }
