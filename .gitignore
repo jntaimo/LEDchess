@@ -34,3 +34,4 @@
 #vscode config files
 *.json
 *.workspace
+*.code-workspace
