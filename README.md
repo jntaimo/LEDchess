@@ -20,7 +20,7 @@ ___
   - [Contact](#contact)
 
 ## General info
-  This is a personal project funding through MIT's [ProjX] program that will be presented on March 8, 2021 at MIT's [Xfair]. This repository represents the code of the project; for more information about the design of the board and 3D models check out my website at jntaimo.com/projects/ledchess.
+  This is a personal project funded through MIT's [ProjX] program that will be presented on March 8, 2021 at MIT's [Xfair]. This repository represents the code of the project; for more information about the design of the board and 3D models check out my website at jntaimo.com/projects/ledchess.
 
   The chessboard is run using an LED strip with 64 RGBW addressable LEDs, which come in different densities, thereby allowing compatibility with boards of various sizes. A [NodeMcu ESP8266][ESP8266] microcontroller sends the signals to each square based on an internal chessboard representation.
   
