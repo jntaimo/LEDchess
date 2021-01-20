@@ -2,7 +2,7 @@
 #include <NeoPixelBrightnessBus.h>
 
 const uint16_t PixelCount = 64;
-const uint8_t PixelPin = 2;
+const uint8_t PixelPin = 24; // ignored for ESP8266
 const uint8_t whiteness = 170;
 const char white = 8;
 const char black = 16;
@@ -192,4 +192,3 @@ void loop(){
     search(white);
     search(black);    
 }
-
