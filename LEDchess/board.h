@@ -2,8 +2,9 @@
 #ifndef HEADER_BOARD
 #define HEADER_BOARD
 
-#include <cstdint>
+
 namespace JN {
+ #include <cstdint>   
 const char *notation[] = {           // convert square id to board notation
 
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",     "i8","j8","k8","l8","m8","n8","o8", "p8",
@@ -38,8 +39,7 @@ private:
     const char *_pieces_ascii = *pieces_ascii;
 
     void _init_board();
-    void _clear_board();
-    void _reset_board();
+    void _delete_board();
     void _init();
 
 public:
@@ -47,18 +47,19 @@ public:
     ~Bitboard();
 
     //move making
-    bool valid_move();
-    bool make_move();
+    bool valid_move(uint8_t src_sq, uint8_t dst_sq);
+    bool make_move(uint8_t src_sq, uint8_t dst_sq);
+    bool make_moves(char * moves);
+    char * parse_move();
     void undo_move(uint16_t nummoves);
 
-    //
-    void print_board();
-    void display_board();
     //getters
     char * get_board();
     char * get_moves();
+    char * get_moves_alg();
     uint16_t get_nummoves();
     char * valid_moves();
+    char * valid_moves(uint8_t src_sq);
 };
 
 }
