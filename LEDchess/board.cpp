@@ -39,10 +39,11 @@ Bitboard::~Bitboard(){
 void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
+ _board = new char[129]; 
  uint8_t K=8;
  while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
   uint8_t L=8;while(L--)_board[16*L+K+8]=(K-4)*(K-4)+(L-3.5)*(L-3.5); /* center-pts table   */
- }     
+ }  
 }
 
 //Deletes the board, allowing the memory to be used elsewhere
