@@ -13,7 +13,11 @@ Bitboard::~Bitboard(){
 
 //Initializes a bitboard with pieces in standard positions
 void Bitboard::_init_board(){
-
+//Concise method from micro-Max
+ uint8_t K=8;
+ while(K--){b[K]=(b[K+112]=o[K+24]+8)+8;b[K+16]=18;b[K+96]=9;  /* initial board setup*/
+  L=8;W(L--)b[16*L+K+8]=(K-4)*(K-4)+(L-3.5)*(L-3.5); /* center-pts table   */
+ }     
 }
 
 //Deletes the board, allowing the memory to be used elsewhere
@@ -44,7 +48,12 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) {
 bool Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
 
 }
+//makes a series of moves stored in array pairs of indices
+//even indices are the source square indices
+//odd indices are the destination square indices.
+bool Bitboard::make_moves(char * moves){
 
+}
 //Reverts the last nummoves moves that were made
 //defaults to undoing the last move if nummoves is not specified
 void Bitboard::undo_move(uint16_t nummoves = 1){

@@ -131,12 +131,12 @@ char *notation[] = {           // convert square id to board notation
 
 char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
 
-//char *pieces[] = {                      // print unicode characters to represent pieces on board
+char *pieces[] = {                      // print unicode characters to represent pieces on board
 
-//  " ", "-", "\u265F", "\u265A", "\u265E", "\u265D", "\u265C", "\u265B", 
-//  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
-//
-//};
+ " ", "-", "\u265F", "\u265A", "\u265E", "\u265D", "\u265C", "\u265B", 
+ "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
+
+};
 
 enum { WHITE = 8, BLACK = 16};    // side to move
 
