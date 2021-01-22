@@ -50,6 +50,8 @@ void Bitboard::_init_board(){
 void Bitboard::_delete_board(){
     if(_board) delete[] _board;
     if(_moves) delete[] _moves;
+    _board = nullptr;
+    _moves = nullptr;
 }
 
 //constructor helper that resets the board and tracking variables
@@ -95,7 +97,7 @@ void Bitboard::undo_move(uint16_t nummoves = 1){
 
 }
 //returns a cchar pointer to the location of the board array
-char * Bitboard::get_board(){
+const char * Bitboard::get_board(){
     return _board;
 }
 //returns a pointer to an array of pairs of previously made moves

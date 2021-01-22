@@ -36,7 +36,7 @@ public:
     void undo_move(uint16_t nummoves);
 
     //getters
-    char * get_board();
+    const char * get_board();
     char * get_moves();
     char * get_moves_alg();
     uint16_t get_nummoves();
