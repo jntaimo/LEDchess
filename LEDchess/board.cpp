@@ -68,7 +68,7 @@ void Bitboard::_init(){
 //moves are the indices into the bitboard
 //src_sq = source square index
 //dst_sq = destination square index
-bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) {
+bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 
 }
 
@@ -104,21 +104,21 @@ const char * Bitboard::get_board(){
 //based on the current board configuration
 //even indices are the source squares indices
 //odd indices are the destination square indices
-char * Bitboard::get_moves(){
+char * Bitboard::get_moves() const{
     return _moves;
 } 
 
 //returns an array of move strings in algebraic notation
-char * Bitboard::get_moves_alg(){
-    char alg_moves[_nummoves];
-    for (uint8_t i = 0; i < _nummoves; ++i){
-        alg_moves[i] = *notation[i]; //gets the algebraic form of each move
-    }
-    return alg_moves;
+char * Bitboard::get_moves_alg() const{
+    // char alg_moves[_nummoves];
+    // for (uint8_t i = 0; i < _nummoves; ++i){
+    //     alg_moves[i] = *notation[i]; //gets the algebraic form of each move
+    // }
+    // return alg_moves;
 }
 
 //Returns the number of moves that have been made in the current game
-uint16_t Bitboard::get_nummoves(){
+uint16_t Bitboard::get_nummoves() const{
     return _nummoves;
 }
 
@@ -127,13 +127,13 @@ uint16_t Bitboard::get_nummoves(){
 //based on the current board configuration
 //even indices are the source squares indices
 //odd indices are the destination square indices
-char * Bitboard::valid_moves(){
+char * Bitboard::valid_moves() const{
     
 } 
 
 //returns a pointer to an array of possible moves
 //for the piece at the bitboard index src_sq
-char * Bitboard::valid_moves(uint8_t src_sq){
+char * Bitboard::valid_moves(uint8_t src_sq) const{
 
 }
 

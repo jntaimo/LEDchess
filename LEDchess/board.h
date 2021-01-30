@@ -29,19 +29,19 @@ public:
     ~Bitboard();
 
     //move making
-    bool valid_move(uint8_t src_sq, uint8_t dst_sq);
+    bool valid_move(uint8_t src_sq, uint8_t dst_sq) const;
     bool make_move(uint8_t src_sq, uint8_t dst_sq);
     bool make_moves(char * moves);
-    char * parse_move();
+    char * parse_move() const;
     void undo_move(uint16_t nummoves);
 
     //getters
     const char * get_board();
-    char * get_moves();
-    char * get_moves_alg();
-    uint16_t get_nummoves();
-    char * valid_moves();
-    char * valid_moves(uint8_t src_sq);
+    char * get_moves() const;
+    char * get_moves_alg() const;
+    uint16_t get_nummoves() const;
+    char * valid_moves() const;
+    char * valid_moves(uint8_t src_sq) const;
 };
 
 }
