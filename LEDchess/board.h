@@ -9,7 +9,7 @@ extern const char *notation[128];
 extern const int newboard[128];
 extern const char pieces[17];
 extern const char *pieces_ascii[16];
-extern char step_vectors[32];                      
+extern int step_vectors[32];                      
 enum{WHITE = 8, BLACK = 16};
 class Bitboard
 {
@@ -37,7 +37,7 @@ public:
     void undo_move(uint16_t nummoves);
 
     //getters
-    const char * get_board() const;
+    char * get_board() const;
     char * get_moves() const;
     char * get_moves_alg() const;
     uint16_t get_nummoves() const;

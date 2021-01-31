@@ -1,6 +1,7 @@
 //Author: Joseph Ntaimo
 //File
 #include "board.h"
+#include <cstdio>
 namespace JN {
 const char *notation[] = {           // convert square id to board notation
 
@@ -35,7 +36,7 @@ const char *pieces_ascii[] = {                      // print unicode characters 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
 
 };
-char step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
+int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
      7,-1,11,6,8,3,6,                          /* 1st dir. in o[] per piece*/
      6,3,5,7,4,5,3,6};                         /* initial piece setup      */
 
@@ -53,11 +54,16 @@ void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
  _board = new char[129]; 
- uint8_t K=8;
+ if (!_board) printf("No board space");
+for(int i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
+ int K=8;
  while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
-  uint8_t L=8;while(L--)_board[16*L+K+8]=(K-4)*(K-4)+(L-3.5)*(L-3.5); /* center-pts table   */
- }  
-//  for (uint8_t i = 0; i < 128; ++i) _board[i] = newboard[i];
+ }
+ K=8;
+ while (K--){  
+ for(uint8_t i=0;i<121;i++)printf(" %c",i&8&&(i+=7)?10:JN::pieces[_board[i]&15]);
+ printf("\n");
+}
 }
 
 //Deletes the board, allowing the memory to be used elsewhere
@@ -113,7 +119,7 @@ void Bitboard::undo_move(uint16_t nummoves = 1){
 
 }
 //returns a cchar pointer to the location of the board array
-const char * Bitboard::get_board() const{
+char * Bitboard::get_board() const{
     return _board;
 }
 //returns a pointer to an array of pairs of previously made moves
