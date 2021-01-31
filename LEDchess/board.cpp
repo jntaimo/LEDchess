@@ -1,7 +1,7 @@
 //Author: Joseph Ntaimo
 //File
 #include "board.h"
-#include <cstdio>
+// #include <cstdio>
 namespace JN {
 const char *notation[] = {           // convert square id to board notation
 
@@ -53,17 +53,11 @@ Bitboard::~Bitboard(){
 void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
- _board = new char[129]; 
- if (!_board) printf("No board space");
+ _board = new uint8_t[129]; 
 for(int i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
  int K=8;
  while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
  }
- K=8;
- while (K--){  
- for(uint8_t i=0;i<121;i++)printf(" %c",i&8&&(i+=7)?10:JN::pieces[_board[i]&15]);
- printf("\n");
-}
 }
 
 //Deletes the board, allowing the memory to be used elsewhere
@@ -100,7 +94,7 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 //returns true if the move was properly executed
 bool Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
     if(src_sq > 127 || dst_sq > 127) return false;
-    char piece = _board[src_sq];    
+    uint8_t piece = _board[src_sq];    
     _board[src_sq] = 0; 
     _board[dst_sq] = piece;
     //add move to moves array
@@ -119,7 +113,7 @@ void Bitboard::undo_move(uint16_t nummoves = 1){
 
 }
 //returns a cchar pointer to the location of the board array
-char * Bitboard::get_board() const{
+uint8_t * Bitboard::get_board() const{
     return _board;
 }
 //returns a pointer to an array of pairs of previously made moves

@@ -2,7 +2,7 @@
 #ifndef HEADER_BOARD
 #define HEADER_BOARD
 
- #include <cstdint>   
+#include <cstdint>   
 namespace JN {
 
 extern const char *notation[128];
@@ -19,7 +19,7 @@ private:
     bool _blackcastled = false;
     bool _white_castled = false;
 
-    char * _board = nullptr;
+    uint8_t * _board = nullptr;
     char * _moves = nullptr;
     void _init_board();
     void _delete_board();
@@ -37,7 +37,7 @@ public:
     void undo_move(uint16_t nummoves);
 
     //getters
-    char * get_board() const;
+    uint8_t * get_board() const;
     char * get_moves() const;
     char * get_moves_alg() const;
     uint16_t get_nummoves() const;
