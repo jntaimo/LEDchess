@@ -14,6 +14,19 @@ const char *notation[] = {           // convert square id to board notation
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",     "i1","j1","k1","l1","m1","n1","o1", "p1",
 
 };
+
+const int newboard[128] = {                 // 0x88 board + positional scores
+
+    22, 20, 21, 23, 19, 21, 20, 22,    0,  0,  5,  5,  0,  0,  5,  0, 
+    18, 18, 18, 18, 18, 18, 18, 18,    5,  5,  0,  0,  0,  0,  5,  5,
+     0,  0,  0,  0,  0,  0,  0,  0,    5, 10, 15, 20, 20, 15, 10,  5,
+     0,  0,  0,  0,  0,  0,  0,  0,    5, 10, 20, 30, 30, 20, 10,  5,    
+     0,  0,  0,  0,  0,  0,  0,  0,    5, 10, 20, 30, 30, 20, 10,  5,
+     0,  0,  0,  0,  0,  0,  0,  0,    5, 10, 15, 20, 20, 15, 10,  5,
+     9,  9,  9,  9,  9,  9,  9,  9,    5,  5,  0,  0,  0,  0,  5,  5,
+    14, 12, 13, 15, 11, 13, 12, 14,    0,  0,  5,  5,  0,  0,  5,  0
+
+};
 const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
 
 const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
@@ -40,10 +53,11 @@ void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
  _board = new char[129]; 
- uint8_t K=8;
- while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
+//  uint8_t K=8;
+//  while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
   //uint8_t L=8;while(L--)_board[16*L+K+8]=(K-4)*(K-4)+(L-3.5)*(L-3.5); /* center-pts table   */
- }  
+//  }  
+ for (uint8_t i = 0; i < 128; ++i) _board[i] = newboard[i];
 }
 
 //Deletes the board, allowing the memory to be used elsewhere
@@ -83,6 +97,8 @@ bool Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
     char piece = _board[src_sq];    
     _board[src_sq] = 0; 
     _board[dst_sq] = piece;
+    //add move to moves array
+    //
     return true;
 }
 //makes a series of moves stored in array pairs of indices
@@ -97,7 +113,7 @@ void Bitboard::undo_move(uint16_t nummoves = 1){
 
 }
 //returns a cchar pointer to the location of the board array
-const char * Bitboard::get_board(){
+const char * Bitboard::get_board() const{
     return _board;
 }
 //returns a pointer to an array of pairs of previously made moves
