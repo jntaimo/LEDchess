@@ -10,5 +10,6 @@ int main(){
     printf("Starting up...\n");
     JN::Bitboard bitboard = JN::Bitboard();
     printboard(bitboard.get_board());
+    bitboard.make_move(0,17);
     return 0;
 }

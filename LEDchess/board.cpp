@@ -1,9 +1,10 @@
 //Author: Joseph Ntaimo
 //File
 #include "board.h"
-// #include <cstdio>
+#include <cstdio>
 namespace JN {
-const char *notation[] = {           // convert square id to board notation
+const int max_moves = 128;
+static const char *notation[] = {           // convert square id to board notation
 
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",     "i8","j8","k8","l8","m8","n8","o8", "p8",
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",     "i7","j7","k7","l7","m7","n7","o7", "p7",
@@ -16,7 +17,7 @@ const char *notation[] = {           // convert square id to board notation
 
 };
 
-const int newboard[128] = {                 // 0x88 board + positional scores
+static const int newboard[128] = {                 // 0x88 board + positional scores
 
     22, 20, 21, 23, 19, 21, 20, 22,    0,  0,  5,  5,  0,  0,  5,  0, 
     18, 18, 18, 18, 18, 18, 18, 18,    5,  5,  0,  0,  0,  0,  5,  5,
@@ -28,15 +29,15 @@ const int newboard[128] = {                 // 0x88 board + positional scores
     14, 12, 13, 15, 11, 13, 12, 14,    0,  0,  5,  5,  0,  0,  5,  0
 
 };
-const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
+static const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
 
-const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
-
+static const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
+//doesn't work on windows systems
  " ", "-", "\u265F", "\u265A", "\u265E", "\u265D", "\u265C", "\u265B", 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
 
 };
-int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
+static int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
      7,-1,11,6,8,3,6,                          /* 1st dir. in o[] per piece*/
      6,3,5,7,4,5,3,6};                         /* initial piece setup      */
 
@@ -46,32 +47,30 @@ Bitboard::Bitboard(/* args */) {
 }
 //destructor
 Bitboard::~Bitboard(){
-    _delete_board();
+    _clear_board();
 }
 
 //Initializes a bitboard with pieces in standard positions
 void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
- _board = new uint8_t[129]; 
-for(int i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
- int K=8;
- while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
- }
+        uint8_t K=8;
+        while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
+    }
 }
 
-//Deletes the board, allowing the memory to be used elsewhere
-void Bitboard::_delete_board(){
-    if(_board) delete[] _board;
-    if(_moves) delete[] _moves;
-    _board = nullptr;
-    _moves = nullptr;
+//Removes all of the pieces from the board
+void Bitboard::_clear_board(){
+    for(uint8_t i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
 }
 
+void Bitboard::_delete_moves(){
+    for (uint8_t i = 0; i < max_moves * 2)
+}
 //constructor helper that resets the board and tracking variables
 //in preparation for a new game.
 void Bitboard::_init(){
-    _delete_board();
+    _delete_moves();
     _init_board();
     _side = WHITE; 
     _nummoves = 0;
@@ -93,18 +92,22 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 //returns false if the move is invalid
 //returns true if the move was properly executed
 bool Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
+    //check if off the board
     if(src_sq > 127 || dst_sq > 127) return false;
+    //move the pieces
     uint8_t piece = _board[src_sq];    
     _board[src_sq] = 0; 
     _board[dst_sq] = piece;
-    //add move to moves array
-    //
+    //add move to moves array 
+    _moves[2*_nummoves] = src_sq;
+    _moves[2*_nummoves + 1];
+    ++_nummoves;
     return true;
 }
 //makes a series of moves stored in array pairs of indices
 //even indices are the source square indices
 //odd indices are the destination square indices.
-bool Bitboard::make_moves(char * moves){
+bool Bitboard::make_moves(uint8_t * moves, uint8_t nummoves){
 
 }
 //Reverts the last nummoves moves that were made
@@ -120,7 +123,7 @@ uint8_t * Bitboard::get_board() const{
 //based on the current board configuration
 //even indices are the source squares indices
 //odd indices are the destination square indices
-char * Bitboard::get_moves() const{
+uint8_t * Bitboard::get_moves() const{
     return _moves;
 } 
 
