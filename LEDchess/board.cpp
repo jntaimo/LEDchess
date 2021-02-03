@@ -53,19 +53,18 @@ Bitboard::~Bitboard(){
 void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
- _board = new char[129]; 
- if (!_board) printf("No board space");
-for(int i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
+ _board = new uint8_t[129]; 
+for(uint8_t i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
  int K=8;
- while(K--){_board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
+ while(K--){
+     _board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
  }
- K=8;
- while (K--){  
- for(uint8_t i=0;i<121;i++)printf(" %c",i&8&&(i+=7)?10:JN::pieces[_board[i]&15]);
- printf("\n");
-}
 }
 
+void Bitboard::_init_moves(){
+    _moves = new uint8_t[256];
+    for(int i = 0; i < 256; ++i) _moves[i] = 0;
+}
 //Deletes the board, allowing the memory to be used elsewhere
 void Bitboard::_delete_board(){
     if(_board) delete[] _board;
@@ -79,6 +78,7 @@ void Bitboard::_delete_board(){
 void Bitboard::_init(){
     _delete_board();
     _init_board();
+    _init_moves();
     _side = WHITE; 
     _nummoves = 0;
 
@@ -98,19 +98,17 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 //dst_sq = destination square index
 //returns false if the move is invalid
 //returns true if the move was properly executed
-bool Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
-    if(src_sq > 127 || dst_sq > 127) return false;
+void Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
     char piece = _board[src_sq];    
     _board[src_sq] = 0; 
     _board[dst_sq] = piece;
     //add move to moves array
     //
-    return true;
 }
 //makes a series of moves stored in array pairs of indices
 //even indices are the source square indices
 //odd indices are the destination square indices.
-bool Bitboard::make_moves(char * moves){
+void Bitboard::make_moves(char * moves){
 
 }
 //Reverts the last nummoves moves that were made
@@ -119,25 +117,18 @@ void Bitboard::undo_move(uint16_t nummoves = 1){
 
 }
 //returns a cchar pointer to the location of the board array
-char * Bitboard::get_board() const{
+uint8_t * Bitboard::get_board() const{
     return _board;
 }
 //returns a pointer to an array of pairs of previously made moves
 //based on the current board configuration
 //even indices are the source squares indices
 //odd indices are the destination square indices
-char * Bitboard::get_moves() const{
+uint8_t * Bitboard::get_moves() const{
     return _moves;
 } 
 
 //returns an array of move strings in algebraic notation
-char * Bitboard::get_moves_alg() const{
-    // char alg_moves[_nummoves];
-    // for (uint8_t i = 0; i < _nummoves; ++i){
-    //     alg_moves[i] = *notation[i]; //gets the algebraic form of each move
-    // }
-    // return alg_moves;
-}
 
 //Returns the number of moves that have been made in the current game
 uint16_t Bitboard::get_nummoves() const{

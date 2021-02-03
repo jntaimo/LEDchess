@@ -19,9 +19,10 @@ private:
     bool _blackcastled = false;
     bool _white_castled = false;
 
-    char * _board = nullptr;
-    char * _moves = nullptr;
+    uint8_t * _board = nullptr;
+    uint8_t * _moves = nullptr;
     void _init_board();
+    void _init_moves();
     void _delete_board();
     void _init();
 
@@ -31,15 +32,14 @@ public:
 
     //move making
     bool valid_move(uint8_t src_sq, uint8_t dst_sq) const;
-    bool make_move(uint8_t src_sq, uint8_t dst_sq);
-    bool make_moves(char * moves);
+    void make_move(uint8_t src_sq, uint8_t dst_sq);
+    void make_moves(char * moves);
     char * parse_move() const;
     void undo_move(uint16_t nummoves);
 
     //getters
-    char * get_board() const;
-    char * get_moves() const;
-    char * get_moves_alg() const;
+    uint8_t * get_board() const;
+    uint8_t * get_moves() const;
     uint16_t get_nummoves() const;
     char * valid_moves() const;
     char * valid_moves(uint8_t src_sq) const;
