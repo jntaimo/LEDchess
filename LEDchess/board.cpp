@@ -101,15 +101,20 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 void Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
     char piece = _board[src_sq];    
     _board[src_sq] = 0; 
+    _last_piece = _board[dst_sq];
     _board[dst_sq] = piece;
     //add move to moves array
-    //
+    _moves[2*_nummoves] = src_sq;
+    _moves[2*_nummoves + 1] = dst_sq;
+    ++_nummoves;
+    //change sides
+    _side = 24 - _side;
 }
 //makes a series of moves stored in array pairs of indices
 //even indices are the source square indices
 //odd indices are the destination square indices.
-void Bitboard::make_moves(char * moves){
-
+void Bitboard::make_moves(char * moves, uint16_t nummoves){
+    for (uint16_t i = 0; i < 2*nummoves; i += 2) make_move(moves[i],moves[i+1]);
 }
 //Reverts the last nummoves moves that were made
 //defaults to undoing the last move if nummoves is not specified

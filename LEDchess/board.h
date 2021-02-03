@@ -16,6 +16,7 @@ class Bitboard
 private:
     uint16_t _nummoves = 0; 
     uint8_t _side = WHITE; 
+    uint8_t _last_piece = 0;
     bool _blackcastled = false;
     bool _white_castled = false;
 
@@ -33,7 +34,7 @@ public:
     //move making
     bool valid_move(uint8_t src_sq, uint8_t dst_sq) const;
     void make_move(uint8_t src_sq, uint8_t dst_sq);
-    void make_moves(char * moves);
+    void make_moves(char * moves, uint16_t nummoves);
     char * parse_move() const;
     void undo_move(uint16_t nummoves);
 
