@@ -9,27 +9,49 @@ const char black = 16;
 
 NeoPixelBrightnessBus<NeoGrbwFeature, Neo800KbpsMethod> strip(PixelCount,PixelPin);
 NeoGamma<NeoGammaTableMethod> colorGamma;
+//
+//RgbwColor bpawn(128, 200, 0 , 90);
+//RgbwColor wpawn(0, 255, 140, 0);
+//
+//RgbwColor bking(255, 0, 0, 0);
+//RgbwColor wking(255, 30, 255, 100);
+//
+//RgbwColor bknight(0, 255, 0, 0);
+//RgbwColor wknight(28, 102, 255, 0);
+//
+//RgbwColor bbishop(255, 255, 0, 0);
+//RgbwColor wbishop(0, 200, 255, 0);
+//
+//RgbwColor brook(255, 170, 0, 0);
+//RgbwColor wrook(179, 0, 119, 0);
+//
+//RgbwColor bqueen(200, 0, 0, 100);
+//RgbwColor wqueen(128, 0, 200, 0);
+//
+//RgbwColor empty(0);
+//RgbwColor none(0,0,0, 255);
 
-RgbwColor bpawn(128, 200, 0 , 90);
-RgbwColor wpawn(0, 255, 140, 0);
+RgbwColor bpawn(255, 255, 0 , 200);
+RgbwColor wpawn(255, 255, 0, 0); //yellow
 
-RgbwColor bking(255, 0, 0, 0);
-RgbwColor wking(255, 30, 255, 100);
+RgbwColor bking(0, 0, 255, 200);
+RgbwColor wking(0, 0, 255, 0);//dark blue
 
-RgbwColor bknight(0, 255, 0, 0);
-RgbwColor wknight(28, 102, 255, 0);
+RgbwColor bknight(255, 128, 0, 200);
+RgbwColor wknight(255, 128, 0, 0);//orange
 
-RgbwColor bbishop(255, 255, 0, 0);
-RgbwColor wbishop(0, 200, 255, 0);
+RgbwColor bbishop(255, 0, 0, 100);
+RgbwColor wbishop(255, 0, 0, 0);//red
 
-RgbwColor brook(255, 170, 0, 0);
-RgbwColor wrook(179, 0, 119, 0);
+RgbwColor brook(0, 255, 0, 200);
+RgbwColor wrook(0, 255, 0, 0); // green
 
-RgbwColor bqueen(200, 0, 0, 100);
-RgbwColor wqueen(128, 0, 200, 0);
+RgbwColor bqueen(187, 51, 255, 100);
+RgbwColor wqueen(187, 51, 255, 0);//purple
 
 RgbwColor empty(0);
 RgbwColor none(0,0,0, 255);
+
 
 RgbwColor checker_square(0, 0, 0, 255);
 RgbwColor piece_colors[] =   {empty, none, bpawn, bking, bknight, bbishop, brook, bqueen, 
@@ -182,7 +204,7 @@ void setup(){
     for(uint8_t i=0; i<14; ++i){
         piece_colors[i]  = colorGamma.Correct(piece_colors[i]);
     }
-    strip.SetBrightness(50);
+    strip.SetBrightness(100);
     strip.Begin();
     display_board();
 }
