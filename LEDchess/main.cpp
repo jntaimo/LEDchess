@@ -38,14 +38,26 @@ void makemove(JN::Bitboard &bitboard){
     } 
 }
 
+void computerplay(JN::Bitboard &bitboard, int depth = 2){
+    while(1)    // computer plays against itself
+    {
+        int score = bitboard.SearchPosition(bitboard._side, depth, -10000, 10000);    // search best move
+        
+        // make AI move
+        bitboard.make_move_best();
+
+        printboardfancy(bitboard.get_board());
+        printf("\nscore: '%d'\n", score);
+        printf("best move: '%s%s'\n", JN::notation[bitboard.best_src], JN::notation[bitboard.best_dst]);
+        
+        getchar();
+    }
+}
 int main(){
     
     printf("Starting up...\n");
     JN::Bitboard bitboard = JN::Bitboard();
-    while (1){
-    printboardfancy(bitboard.get_board());
-    makemove(bitboard);
-    printf("\n");
-    }
+    printf("Made it this far\n");
+    computerplay(bitboard);
     return 0;
 }

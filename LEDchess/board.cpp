@@ -4,7 +4,7 @@
 #include <cstdio>
 namespace JN {
 const int max_moves = 128;
-static const char *notation[] = {           // convert square id to board notation
+const char *notation[] = {           // convert square id to board notation
 
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",     "i8","j8","k8","l8","m8","n8","o8", "p8",
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",     "i7","j7","k7","l7","m7","n7","o7", "p7",
@@ -17,7 +17,7 @@ static const char *notation[] = {           // convert square id to board notati
 
 };
 
-static const int newboard[128] = {                 // 0x88 board + positional scores
+const int newboard[128] = {                 // 0x88 board + positional scores
 
     22, 20, 21, 23, 19, 21, 20, 22,    0,  0,  5,  5,  0,  0,  5,  0, 
     18, 18, 18, 18, 18, 18, 18, 18,    5,  5,  0,  0,  0,  0,  5,  5,
@@ -29,9 +29,9 @@ static const int newboard[128] = {                 // 0x88 board + positional sc
     14, 12, 13, 15, 11, 13, 12, 14,    0,  0,  5,  5,  0,  0,  5,  0
 
 };
-static const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
+const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
 
-static const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
+const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
 //doesn't work on windows systems
  " ", "-", "\u265F", "\u265A", "\u265E", "\u265D", "\u265C", "\u265B", 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
@@ -49,7 +49,7 @@ Bitboard::Bitboard(/* args */) {
 }
 //destructor
 Bitboard::~Bitboard(){
-    _clear_board();
+    _delete_board();
 }
 
 //Initializes a bitboard with pieces in standard positions
@@ -61,6 +61,7 @@ for(uint8_t i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
  int K=8;
  while(K--){
      _board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
+    int L=8;while(L--)_board[16*L+K+8]=(K-4)*(K-4)+(L-3.5)*(L-3.5);
  }
 }
 
@@ -77,12 +78,11 @@ void Bitboard::_delete_board(){
 }
 
 void Bitboard::_delete_moves(){
-    for (uint8_t i = 0; i < max_moves * 2)
+    for (uint8_t i = 0; i < 256; ++i) _moves[i] = 0;
 }
 //constructor helper that resets the board and tracking variables
 //in preparation for a new game.
 void Bitboard::_init(){
-    _delete_moves();
     _init_board();
     _init_moves();
     _side = WHITE; 
@@ -114,6 +114,13 @@ void Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
     ++_nummoves;
     //change sides
     _side = 24 - _side;
+}
+
+//makes the move from current best source square
+//to the current best destination square
+//does not search for the best move
+void Bitboard::make_move_best(){
+    make_move(best_src,best_dst);
 }
 //makes a series of moves stored in array pairs of indices
 //even indices are the source square indices
@@ -158,6 +165,128 @@ char * Bitboard::valid_moves() const{
 //for the piece at the bitboard index src_sq
 char * Bitboard::valid_moves(uint8_t src_sq) const{
 
+}
+
+
+
+int Bitboard::SearchPosition(int side, int depth, int alpha, int beta)    // returns best move's score, stores best move
+{
+    if(!depth)    // if leaf node is reached - evaluate position
+    {
+        // Evaluate position        
+        int mat_score = 0, pos_score = 0, pce, eval = 0;
+    
+        for(int sq = 0; sq < 128; sq++)    // loop over board squares
+        {
+            if(!(sq & 0x88))    // evaluate only those squares that are on board
+            {
+                if(pce = _board[sq])    // store piece code value
+                {
+                    mat_score += piece_weights[pce & 15]; // material score
+                    (pce & 8) ? (pos_score += _board[sq + 8]) : (pos_score -= _board[sq + 8]); // positional score
+                }
+            }
+        }
+    
+        eval = mat_score + pos_score;
+
+        return (side == 8) ? eval : -eval;   // here returns current position's score
+    }
+
+    int old_alpha = alpha;    // needed to check whether to store best move or not
+    int temp_src;             // temorary best from square
+    int temp_dst;             // temporary best to square
+    int score = -10000;       // minus infinity
+
+    // Generate moves
+    int piece, type, directions, dst_square, captured_square, captured_piece, step_vector;
+    
+    for(int src_square = 0; src_square < 128; src_square++)    // loop over board squares
+    {
+        if(!(src_square & 0x88))    // check if square where piece to generate moves for stands is on board
+        {
+            piece = _board[src_square];    // store current piece code (might be empty square if no piece)
+                                        
+            if(piece & side)    // if piece belongs to the moving side
+            {
+                type = piece & 7;   // extract piece type (e.g. wP, bP, K, N, R, B, Q)
+                directions = step_vectors[type + 30];    // init current piece's move offsets list pointer
+                
+                while(step_vector = step_vectors[++directions])    // loop over move offsets
+                {
+                    dst_square = src_square;    // init destination square (to square)
+                    
+                    do                          // loop over destination squares within one ray (for sliders)
+                    {           
+                        dst_square += step_vector;    // get next destination square
+                        captured_square = dst_square;    // init square where piece capture occurs
+                        
+                        if(dst_square & 0x88) break;    // break out of loop if destination square is off board
+    
+                        captured_piece = _board[captured_square];    // init captured piece
+    
+                        if(captured_piece & side) break;    // break if captured own piece
+                        if(type < 3 && !(step_vector & 7) != !captured_piece) break;    // pawns captures only diagonally
+                        if((captured_piece & 7) == 3) return 10000;    /* score move on king capture,
+                                                                          we are at the illegal branch now, so no
+                                                                          need to keep searching any further
+                                                                       */
+                        // make move
+                        _board[captured_square] = 0;    // clear captured square
+                        _board[src_square] = 0;         // clear source square (from square where piece was)
+                        _board[dst_square] = piece;     // put piece to destination square (to square)
+                        printf("%s%s",notation[src_square], notation[dst_square]);
+                        // pawn promotion
+                        if(type < 3)    // if pawn
+                        {
+                            if(dst_square + step_vector + 1 & 0x80)    // goes to the 1th/8th rank
+                                _board[dst_square]|=7;    // convert it to queen
+                        }
+                        
+                        score = -SearchPosition(24 - side, depth - 1, -beta, -alpha);    // recursive negamax search call
+                                              
+                        // take back
+                        _board[dst_square] = 0;    // clear the destination square (to square)
+                        _board[src_square] = piece;     // put the piece back to it's original square (from square)
+                        _board[captured_square] = captured_piece;    // restore captured piece on source square if any
+
+                        //Needed to detect checkmate
+                        best_src = src_square;
+                        best_dst = dst_square;
+
+                        // alpha-beta stuff
+                        if(score > alpha)
+                        {
+                            if(score >= beta)
+                                return beta;    // beta cutoff
+                            
+                            alpha = score;     // alpha acts like max in minimax, best move score so far
+        
+                            // save best move in given branch
+                            temp_src = src_square;
+                            temp_dst = dst_square;
+                        }              
+                        
+                        captured_piece += type < 5;    // fake capture for leapers(knights, kings, pawns)
+                        
+                        // unfake capture for pawns if double pawn push is on the cards
+                        if(type < 3 & 6*side + (dst_square & 0x70) == 0x80)captured_piece--;
+                    }
+    
+                    while(!captured_piece);    // terminate loop if captured something
+                }
+            }
+        }
+    }
+
+    // store the best move
+    if(alpha != old_alpha)
+    {
+        best_src = temp_src;
+        best_dst = temp_dst;
+    }
+
+    return alpha;   // here returns the best score
 }
 
 }

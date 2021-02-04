@@ -16,7 +16,7 @@ class Bitboard
 {
 private:
     uint16_t _nummoves = 0; 
-    uint8_t _side = WHITE; 
+     
     bool _blackcastled = false;
     bool _white_castled = false;
 
@@ -24,18 +24,21 @@ private:
     uint8_t * _moves = nullptr;
     void _init_board();
     void _init_moves();
+    void _delete_moves();
     void _delete_board();
     void _init();
 
 public:
+    uint8_t _side = WHITE;
     Bitboard(/* args */);
     ~Bitboard();
     //best source and destination square index
-    int best_src, best_dst;
+    int best_src = 0, best_dst = 0;
     //move making
     bool valid_move(uint8_t src_sq, uint8_t dst_sq) const;
     void make_move(uint8_t src_sq, uint8_t dst_sq);
     void make_moves(char * moves, uint16_t nummoves);
+    void make_move_best();
     char * parse_move() const;
     void undo_move(uint16_t nummoves);
 
@@ -45,6 +48,12 @@ public:
     uint16_t get_nummoves() const;
     char * valid_moves() const;
     char * valid_moves(uint8_t src_sq) const;
+
+    //reset
+    void reset();
+
+    //smart boi
+    int SearchPosition(int side, int depth, int alpha, int beta);
 };
 
 }
