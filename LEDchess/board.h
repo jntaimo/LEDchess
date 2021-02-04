@@ -2,9 +2,9 @@
 #ifndef HEADER_BOARD
 #define HEADER_BOARD
 
- #include <cstdint>   
+#include <cstdint>   
 namespace JN {
-
+extern const int max_moves;
 extern const char *notation[128];
 extern const int newboard[128];
 extern const char pieces[17];
