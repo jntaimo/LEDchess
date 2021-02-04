@@ -3,7 +3,8 @@
 #include "board.h"
 #include <cstdio>
 namespace JN {
-const char *notation[] = {           // convert square id to board notation
+const int max_moves = 128;
+static const char *notation[] = {           // convert square id to board notation
 
     "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",     "i8","j8","k8","l8","m8","n8","o8", "p8",
     "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",     "i7","j7","k7","l7","m7","n7","o7", "p7",
@@ -16,7 +17,7 @@ const char *notation[] = {           // convert square id to board notation
 
 };
 
-const int newboard[128] = {                 // 0x88 board + positional scores
+static const int newboard[128] = {                 // 0x88 board + positional scores
 
     22, 20, 21, 23, 19, 21, 20, 22,    0,  0,  5,  5,  0,  0,  5,  0, 
     18, 18, 18, 18, 18, 18, 18, 18,    5,  5,  0,  0,  0,  0,  5,  5,
@@ -28,10 +29,10 @@ const int newboard[128] = {                 // 0x88 board + positional scores
     14, 12, 13, 15, 11, 13, 12, 14,    0,  0,  5,  5,  0,  0,  5,  0
 
 };
-const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
+static const char pieces[] = ".-pknbrq-P-KNBRQ";     // print ASCII characters to represent pieces on board
 
-const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
-
+static const char *pieces_ascii[] = {                      // print unicode characters to represent pieces on board
+//doesn't work on windows systems
  " ", "-", "\u265F", "\u265A", "\u265E", "\u265D", "\u265C", "\u265B", 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
 
@@ -48,7 +49,7 @@ Bitboard::Bitboard(/* args */) {
 }
 //destructor
 Bitboard::~Bitboard(){
-    _delete_board();
+    _clear_board();
 }
 
 //Initializes a bitboard with pieces in standard positions
@@ -75,10 +76,13 @@ void Bitboard::_delete_board(){
     _moves = nullptr;
 }
 
+void Bitboard::_delete_moves(){
+    for (uint8_t i = 0; i < max_moves * 2)
+}
 //constructor helper that resets the board and tracking variables
 //in preparation for a new game.
 void Bitboard::_init(){
-    _delete_board();
+    _delete_moves();
     _init_board();
     _init_moves();
     _side = WHITE; 
