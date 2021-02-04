@@ -36,9 +36,11 @@ const char *pieces_ascii[] = {                      // print unicode characters 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
 
 };
-int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
+const int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
      7,-1,11,6,8,3,6,                          /* 1st dir. in o[] per piece*/
      6,3,5,7,4,5,3,6};                         /* initial piece setup      */
+
+const int piece_weights[] = { 0, 0, -100, 0, -300, -350, -500, -900, 0, 100, 0, 0, 300, 350, 500, 900 };
 
 //constructor
 Bitboard::Bitboard(/* args */) {
@@ -101,7 +103,6 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 void Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
     char piece = _board[src_sq];    
     _board[src_sq] = 0; 
-    _last_piece = _board[dst_sq];
     _board[dst_sq] = piece;
     //add move to moves array
     _moves[2*_nummoves] = src_sq;

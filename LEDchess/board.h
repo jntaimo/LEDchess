@@ -9,14 +9,14 @@ extern const char *notation[128];
 extern const int newboard[128];
 extern const char pieces[17];
 extern const char *pieces_ascii[16];
-extern int step_vectors[32];                      
+extern const int step_vectors[32];     
+extern const int piece_weights[16];                 
 enum{WHITE = 8, BLACK = 16};
 class Bitboard
 {
 private:
     uint16_t _nummoves = 0; 
     uint8_t _side = WHITE; 
-    uint8_t _last_piece = 0;
     bool _blackcastled = false;
     bool _white_castled = false;
 
@@ -30,7 +30,8 @@ private:
 public:
     Bitboard(/* args */);
     ~Bitboard();
-
+    //best source and destination square index
+    int best_src, best_dst;
     //move making
     bool valid_move(uint8_t src_sq, uint8_t dst_sq) const;
     void make_move(uint8_t src_sq, uint8_t dst_sq);
