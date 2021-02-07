@@ -41,6 +41,28 @@ const int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* st
      7,-1,11,6,8,3,6,                          /* 1st dir. in o[] per piece*/
      6,3,5,7,4,5,3,6};                         /* initial piece setup      */
 
+const int move_offsets[] = {
+
+   15,  16,  17,   0,                           // white pawns
+  -15, -16, -17,   0,                           // black pawns
+    1,  16,  -1, -16,   0,                      // rooks
+    1,  16,  -1, -16,  15, -15, 17, -17,  0,    // queens, kings and bishops
+   14, -14,  18, -18,  31, -31, 33, -33,  0,    // knights
+    3,  -1,  12,  21,  16,   7, 12              /* starting indexes for each piece type in order:
+                                                   black pawns, white pawns, kings, knights, bishops, rooks, queens
+                                                   
+                                                   e.g. piece type is 4 - knight
+                                                   move_offset[30] == 0
+                                                   move_offset[from 31 to 37] == 3, -1, 12, 21, 16, 7, 12
+                                                   so move_offset[30 + type(which is 4 in case of knight)] is 34,
+                                                   so at move_offset[34] value is 21 - this is the index where knight
+                                                   offsets are starting, so we can loop over knight move offests to
+                                                   generate knight moves.
+                                                   
+                                                */ 
+
+};
+
 const int piece_weights[] = { 0, 0, -100, 0, -300, -350, -500, -900, 0, 100, 0, 0, 300, 350, 500, 900 };
 
 //constructor
@@ -65,6 +87,11 @@ for(uint8_t i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
  }
 }
 
+void Bitboard::_init_board_basic(){
+    _board = new uint8_t[128];
+    for(uint8_t i = 0; i < 128; ++i) _board[i] = newboard[i];
+}
+
 void Bitboard::_init_moves(){
     _moves = new uint8_t[256];
     for(int i = 0; i < 256; ++i) _moves[i] = 0;
@@ -84,6 +111,7 @@ void Bitboard::_delete_moves(){
 //in preparation for a new game.
 void Bitboard::_init(){
     _init_board();
+    //_init_board_basic();
     _init_moves();
     _side = WHITE; 
     _nummoves = 0;
@@ -105,6 +133,7 @@ bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
 //returns false if the move is invalid
 //returns true if the move was properly executed
 void Bitboard::make_move(uint8_t src_sq, uint8_t dst_sq){
+    if(_nummoves > 100) _init();
     char piece = _board[src_sq];    
     _board[src_sq] = 0; 
     _board[dst_sq] = piece;
@@ -171,8 +200,10 @@ char * Bitboard::valid_moves(uint8_t src_sq) const{
 
 int Bitboard::SearchPosition(int side, int depth, int alpha, int beta)    // returns best move's score, stores best move
 {
+    
     if(!depth)    // if leaf node is reached - evaluate position
     {
+        
         // Evaluate position        
         int mat_score = 0, pos_score = 0, pce, eval = 0;
     
@@ -203,16 +234,18 @@ int Bitboard::SearchPosition(int side, int depth, int alpha, int beta)    // ret
     
     for(int src_square = 0; src_square < 128; src_square++)    // loop over board squares
     {
+        
         if(!(src_square & 0x88))    // check if square where piece to generate moves for stands is on board
         {
             piece = _board[src_square];    // store current piece code (might be empty square if no piece)
                                         
             if(piece & side)    // if piece belongs to the moving side
             {
+               
                 type = piece & 7;   // extract piece type (e.g. wP, bP, K, N, R, B, Q)
-                directions = step_vectors[type + 30];    // init current piece's move offsets list pointer
+                directions = move_offsets[type + 30];    // init current piece's move offsets list pointer
                 
-                while(step_vector = step_vectors[++directions])    // loop over move offsets
+                while(step_vector = move_offsets[++directions])    // loop over move offsets
                 {
                     dst_square = src_square;    // init destination square (to square)
                     
@@ -235,7 +268,7 @@ int Bitboard::SearchPosition(int side, int depth, int alpha, int beta)    // ret
                         _board[captured_square] = 0;    // clear captured square
                         _board[src_square] = 0;         // clear source square (from square where piece was)
                         _board[dst_square] = piece;     // put piece to destination square (to square)
-                        printf("%s%s",notation[src_square], notation[dst_square]);
+                        
                         // pawn promotion
                         if(type < 3)    // if pawn
                         {

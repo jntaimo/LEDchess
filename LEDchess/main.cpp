@@ -57,7 +57,7 @@ int main(){
     
     printf("Starting up...\n");
     JN::Bitboard bitboard = JN::Bitboard();
-    printf("Made it this far\n");
-    computerplay(bitboard);
+    
+    computerplay(bitboard, 4);
     return 0;
 }

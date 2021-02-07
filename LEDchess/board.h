@@ -10,7 +10,8 @@ extern const int newboard[128];
 extern const char pieces[17];
 extern const char *pieces_ascii[16];
 extern const int step_vectors[32];     
-extern const int piece_weights[16];                 
+extern const int piece_weights[16];  
+extern const int move_offsetts[38];               
 enum{WHITE = 8, BLACK = 16};
 class Bitboard
 {
@@ -23,6 +24,7 @@ private:
     uint8_t * _board = nullptr;
     uint8_t * _moves = nullptr;
     void _init_board();
+    void _init_board_basic();
     void _init_moves();
     void _delete_moves();
     void _delete_board();
