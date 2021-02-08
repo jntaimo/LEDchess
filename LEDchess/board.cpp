@@ -37,7 +37,8 @@ const char *pieces_ascii[] = {                      // print unicode characters 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
 
 };
-const int step_vectors[]={-16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
+const int step_vectors[]={
+  -16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
      7,-1,11,6,8,3,6,                          /* 1st dir. in o[] per piece*/
      6,3,5,7,4,5,3,6};                         /* initial piece setup      */
 
@@ -78,11 +79,11 @@ Bitboard::~Bitboard(){
 void Bitboard::_init_board(){
 //Concise method from micro-Max
 //More details here https://home.hccnet.nl/h.g.muller/encode.html
- _board = new uint8_t[129]; 
-for(uint8_t i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
- int K=8;
- while(K--){
-     _board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
+  _board = new uint8_t[129]; 
+  for(uint8_t i = 0; i < 129; ++i ) _board[i]= 0;//clear board completely
+  int K=8;
+  while(K--){
+    _board[K]=(_board[K+112]=step_vectors[K+24]+8)+8;_board[K+16]=18;_board[K+96]=9;  /* initial board setup*/
     int L=8;while(L--)_board[16*L+K+8]=(K-4)*(K-4)+(L-3.5)*(L-3.5);
  }
 }
@@ -110,8 +111,8 @@ void Bitboard::_delete_moves(){
 //constructor helper that resets the board and tracking variables
 //in preparation for a new game.
 void Bitboard::_init(){
-    _init_board();
-    //_init_board_basic();
+    //_init_board();
+    _init_board_basic();
     _init_moves();
     _side = WHITE; 
     _nummoves = 0;
