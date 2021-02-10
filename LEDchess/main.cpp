@@ -31,18 +31,28 @@ void makemove(JN::Bitboard &bitboard){
     int src_sq;
     int dst_sq;
     p = chars;
+    printf("Your move: \n");
     while((*p++=getchar())>10);
     if(*chars-10){
     src_sq=*chars-16*chars[1]+799,dst_sq=chars[2]-16*chars[3]+799;
-    bitboard.make_move(src_sq,dst_sq);
+    if(bitboard.valid_move(src_sq, dst_sq)){
+        bitboard.make_move(src_sq,dst_sq);       
+    } else {
+        printf("%d %d is an invalid move\n", src_sq, dst_sq);
+    }
+
     } 
 }
 
-void computerplay(JN::Bitboard &bitboard, int depth = 2){
+void computerplay(JN::Bitboard &bitboard, int depth = 4){
     while(1)    // computer plays against itself
     {
         int score = bitboard.SearchPosition(bitboard._side, depth, -10000, 10000);    // search best move
-        
+        if (bitboard.valid_move(bitboard.best_src, bitboard.best_dst)){
+            printf("AI move is valid");
+        } else {
+            printf("AI move is invalid");
+        }
         // make AI move
         bitboard.make_move_best();
 
@@ -58,6 +68,10 @@ int main(){
     printf("Starting up...\n");
     JN::Bitboard bitboard = JN::Bitboard();
     
-    computerplay(bitboard, 4);
+    //computerplay(bitboard, 4);
+    while(1){
+        makemove(bitboard);
+        printboardfancy(bitboard.get_board());
+    }
     return 0;
 }

@@ -124,7 +124,22 @@ void Bitboard::_init(){
 //src_sq = source square index
 //dst_sq = destination square index
 bool Bitboard::valid_move(uint8_t src_sq, uint8_t dst_sq) const {
-
+    //Has to be on the board
+    if(src_sq & 0x88 || dst_sq & 0x88 ) return false;
+    //Needs to be a piece at the src square
+    uint8_t src_piece = _board[src_sq];
+    uint8_t dst_piece = _board[dst_sq];
+    if(!src_piece) return false;
+    //piece must be on the proper side
+    if (!(src_piece & _side)) return false;
+    //Destination square can't be on the same side
+    if((src_piece & WHITE && dst_piece & WHITE) || (src_piece & BLACK && dst_piece & BLACK)) return false;
+    uint8_t * moves = valid_moves(src_sq);
+    for (uint8_t i = 0; i < 64; ++i){
+        if (moves[i] == dst_sq) return true;
+    }
+    delete[] moves;
+    return false;
 }
 
 //Makes a move on the bitboard
@@ -187,14 +202,55 @@ uint16_t Bitboard::get_nummoves() const{
 //based on the current board configuration
 //even indices are the source squares indices
 //odd indices are the destination square indices
-char * Bitboard::valid_moves() const{
+uint8_t * Bitboard::valid_moves() const{
     
 } 
 
 //returns a pointer to an array of possible moves
 //for the piece at the bitboard index src_sq
-char * Bitboard::valid_moves(uint8_t src_sq) const{
+uint8_t * Bitboard::valid_moves(uint8_t src_square) const{
+    //output array of destination squares
+    //max of 63 destination squares on the board
+    uint8_t * moves  = new uint8_t[64];
+    for (uint8_t i = 0; i < 64; ++i) moves[i] = 0;
+    uint8_t move_i = 0;
+    uint8_t piece = _board[src_square];
+    uint8_t side = WHITE;
+    if(piece & 16) side = BLACK;
+    uint8_t type, directions, dst_square, captured_square, captured_piece, step_vector;
+    type = piece & 7;   // extract piece type (e.g. wP, bP, K, N, R, B, Q)
+    directions = move_offsets[type + 30];    // init current piece's move offsets list pointer
+    
+    while(step_vector = move_offsets[++directions])    // loop over move offsets
+    {
+        dst_square = src_square;    // init destination square (to square)
+        
+        do                          // loop over destination squares within one ray (for sliders)
+        {           
+            dst_square += step_vector;    // get next destination square
+            captured_square = dst_square;    // init square where piece capture occurs
+            
+            if(dst_square & 0x88) break;    // break out of loop if destination square is off board
 
+            captured_piece = _board[captured_square];    // init captured piece
+
+            if(captured_piece & side) break;    // break if captured own piece
+            if(type < 3 && !(step_vector & 7) != !captured_piece) break;    // pawns captures only diagonally
+            // make move
+            moves[move_i++] = dst_square;
+            //add the move to the array
+
+            captured_piece += type < 5;    // fake capture for leapers(knights, kings, pawns)
+            
+            // unfake capture for pawns if double pawn push is on the cards
+            if(type < 3 & 6*side + (dst_square & 0x70) == 0x80)captured_piece--;
+            if (move_i >= 63) break;
+        }
+
+        while(!captured_piece);    // terminate loop if captured something
+    }
+    moves[++move_i] = 128;
+    return moves;
 }
 
 

@@ -48,8 +48,8 @@ public:
     uint8_t * get_board() const;
     uint8_t * get_moves() const;
     uint16_t get_nummoves() const;
-    char * valid_moves() const;
-    char * valid_moves(uint8_t src_sq) const;
+    uint8_t * valid_moves() const;
+    uint8_t * valid_moves(uint8_t src_sq) const;
 
     //reset
     void reset();
