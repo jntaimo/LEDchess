@@ -6,14 +6,14 @@
 #define BRIGHTNESS  100
 #define LED_TYPE    WS2812
 #define COLOR_ORDER GRB
-#define DEPTH 4
+#define DEPTH 3
 CRGB leds[NUM_LEDS];
 
 CRGB bpawn = CRGB::Yellow; 
-CRGB wpawn = CRGB::Coral;//yellow
+CRGB wpawn = CRGB::Goldenrod;//yellow
 
 CRGB bking = CRGB::Blue; 
-CRGB wking = CRGB::SkyBlue; //Blue
+CRGB wking = CRGB::RoyalBlue; //Blue
 
 CRGB bknight = CRGB::DarkOrange;
 CRGB wknight = CRGB::OrangeRed; // Orange
@@ -25,7 +25,7 @@ CRGB brook = CRGB::Green;
 CRGB wrook = CRGB::LawnGreen;//Green
 
 CRGB bqueen = CRGB::Purple;
-CRGB wqueen = CRGB::Indigo;//purple
+CRGB wqueen = CRGB::Amethyst;//purple
 
 CRGB empty = CRGB::Black;
 CRGB none = CRGB::Black;//Black
@@ -91,17 +91,21 @@ void user_move(JN::Bitboard &bitboard){
   p = c;
   while(!Serial.available()) delay(100); // check every 10 msecs for input
   while((*p++=Serial.read()) > 10);
-  if(*c-10)src_sq=c[0]-16*c[1]+799,dst_sq=c[2]-16*c[3]+799;
+  if(*c-10){src_sq=c[0]-16*c[1]+799,dst_sq=c[2]-16*c[3]+799;
   Serial.println(src_sq);
   Serial.println(dst_sq);
   bitboard.make_move(src_sq, dst_sq);
   Serial.println("user_move: ");
   Serial.print(JN::notation[src_sq]);
   Serial.println(JN::notation[dst_sq]);
+  } else {
+    int score = bitboard.SearchPosition(bitboard._side, DEPTH, -10000, 10000 );
+    bitboard.make_move_best();    
+  }
 }
 
 void setup(){
-    delay(3000);
+    delay(1000);
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(  BRIGHTNESS );
     Serial.begin(115200);
@@ -112,11 +116,11 @@ void setup(){
 }
 
 void loop(){
-    
+    user_move(bitboard);
     display_board(bitboard.get_board());
     print_board(bitboard.get_board());
     delay(100);
-    user_move(bitboard);
+    while(!Serial.available()) delay(100);
     int score = bitboard.SearchPosition(bitboard._side, DEPTH, -10000, 10000 );
     bitboard.make_move_best();
     display_board(bitboard.get_board());
