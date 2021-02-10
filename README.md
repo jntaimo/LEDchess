@@ -38,6 +38,9 @@ ___
 ## Features
 * Shows the piece colors in default format.
 * Demo animation runs through all of the possible moves from the start configuration, displaying them on the board, as well as over the serial monitor.
+* Input moves over the serial connection
+* Run chess engine locally
+* Converts moves from long algebraic notation (e.g. e2e4 d7d6) to internal square notation
 ### To do:
 #### Basic:
 * Allow two-player mode
@@ -47,7 +50,6 @@ ___
 * Change color profile
 #### Advanced
 * Input
-  * Input moves over the serial connection
   * Input moves using wireless controller
   * Input moves using keyboard over wifi
 * Output
@@ -61,7 +63,6 @@ ___
   * Communicate via Universal Chess Interface ([UCI])
   * Convert moves from [Algebraic-Notation] to square notation and vice-versa 
 * Chess engine
-  * Run chess engine locally
   * Use chess engine on Raspberry Pi
   * Use chess engine on Teensy4.1
   
@@ -80,7 +81,7 @@ ___
 Welcome to the bottom of the page! You made it! My name is Joseph Ntaimo, and I'm a sophomore at MIT studying mechanical engineering and computer science. My primary interests include music technology (e.g.sound reactive LEDs) and hacking stuff together with microcontrollers. Additionaly, I DJ for my hall at MIT (Woah PUTZ!), and definitely plan on using this chessboard as a sound-reactive display once I get it all working.
 
 ## Contact
-Check out more about me and my projects at jntaimo.com.
+Check out more about me and my projects at [jntaimo.com](http://www.jntaimo.com).
 
 Do you want to get in touch? Shoot me an email at jntaimo@mit.edu
 
