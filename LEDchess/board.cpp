@@ -17,7 +17,7 @@ const char *notation[] = {           // convert square id to board notation
 
 };
 
-const int newboard[128] = {                 // 0x88 board + positional scores
+const int8_t newboard[128] = {                 // 0x88 board + positional scores
 
     22, 20, 21, 23, 19, 21, 20, 22,    0,  0,  5,  5,  0,  0,  5,  0, 
     18, 18, 18, 18, 18, 18, 18, 18,    5,  5,  0,  0,  0,  0,  5,  5,
@@ -37,12 +37,12 @@ const char *pieces_ascii[] = {                      // print unicode characters 
  "-", "\u2659", "-", "\u2654", "\u2658", "\u2657", "\u2656", "\u2655",  
 
 };
-const int step_vectors[]={
+const int8_t step_vectors[]={
   -16,-15,-17,0,1,16,0,1,16,15,17,0,14,18,31,33,0, /* step-vector lists */
      7,-1,11,6,8,3,6,                          /* 1st dir. in o[] per piece*/
      6,3,5,7,4,5,3,6};                         /* initial piece setup      */
 
-const int move_offsets[] = {
+const int8_t move_offsets[] = {
 
    15,  16,  17,   0,                           // white pawns
   -15, -16, -17,   0,                           // black pawns

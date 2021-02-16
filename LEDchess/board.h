@@ -6,10 +6,10 @@
 namespace JN {
 extern const int max_moves;
 extern const char *notation[128];
-extern const int newboard[128];
+extern const int8_t newboard[128];
 extern const char pieces[17];
 extern const char *pieces_ascii[16];
-extern const int step_vectors[32];     
+extern const int8_t step_vectors[32];     
 extern const int piece_weights[16];  
 extern const int move_offsetts[38];               
 enum{WHITE = 8, BLACK = 16};
