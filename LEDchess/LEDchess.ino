@@ -1,12 +1,15 @@
 #include "board.h"
 #include <NeoPixelBrightnessBus.h>
 #include <FastLED.h>
+#include <ESP8266WiFi.h>
+#include <espnow.h>
 #define LED_PIN     4
 #define NUM_LEDS    64
 #define BRIGHTNESS  100
 #define LED_TYPE    WS2812
 #define COLOR_ORDER GRB
 #define DEPTH 3
+
 CRGB leds[NUM_LEDS];
 
 CRGB bpawn = CRGB::Yellow; 
@@ -28,14 +31,58 @@ CRGB bqueen = CRGB::Purple;
 CRGB wqueen = CRGB::Amethyst;//purple
 
 CRGB empty = CRGB::Black;
-CRGB none = CRGB::Black;//Black
+CRGB none = CRGB::White;//Black
 
 CRGB checker_square = CRGB::Black;
 CRGB piece_colors[] =   {empty, none, bpawn, bking, bknight, bbishop, brook, bqueen, 
                                 none, wpawn, none, wking, wknight, wbishop, wrook, wqueen};
 
 JN::Bitboard bitboard = JN::Bitboard();
+uint8_t selector = 0;
+typedef struct Directions{
+  bool up;
+  bool down;
+  bool left;
+  bool right;
+  bool button;
+} Directions;
+Directions Dirs {false, false, false, false, false}; 
+void printDir(Directions &Dirs){
+  Serial.print("up ");
+  Serial.print(Dirs.up);
+  Serial.print(" down ");
+  Serial.print(Dirs.down);
+  Serial.print(" left ");
+  Serial.print(Dirs.left);
+  Serial.print(" right ");
+  Serial.print(Dirs.right);
+  Serial.println(Dirs.button ? " !":" .");
+}
+// Callback function that will be executed when data is received
+void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
+  memcpy(&Dirs, incomingData, sizeof(Dirs));
+  move_selector(selector, Dirs);
+  display_board(bitboard.get_board());
+  display_selector(selector);
+  Serial.print("Bytes received: ");
+  Serial.println(len);
+  printDir(Dirs);
+  Serial.println();
+}
+uint8_t move_selector(uint8_t &selector, Directions &Dirs){
+    Serial.print("Selector index: ");
+    Serial.println(selector);
+    if (Dirs.up && !((selector - 16) & 0x88)) selector -= 16;
+    if (Dirs.down && !((selector + 16) & 0x88)) selector +=16;
+    if (Dirs.left && !((selector - 1) & 0x88)) selector -= 1;
+    if (Dirs.right && !((selector + 1) & 0x88)) selector += 1;
+    return selector;
+}
 
+void display_selector(uint8_t selector){
+    leds[strip_index(selector)] = none;
+    FastLED.show();
+}
 void print_board(uint8_t * board){
     uint8_t i = 0;
     char piece = 0;
@@ -54,12 +101,15 @@ void print_board(uint8_t * board){
     Serial.println();
 }
 
+//Converts the bitboard index to the proper index on the LED strip
+//Does not check that the index is on the board.
 uint8_t strip_index(uint8_t index){
     uint8_t row = index / 16;
     uint8_t col = index % 16;
     return 8*row + ((row%2)?col:(7-col)); //odd rows are reversed
 }
 
+//Displays the current state of the bitboard on the LEDs
 void display_board(uint8_t * board){
     uint8_t i = 0;
     uint8_t piece = 0;
@@ -80,9 +130,11 @@ void display_board(uint8_t * board){
             ++i;
         } else i+=8;
     }
+    //display_selector(selector);
     FastLED.show();
 }
-
+//Inputs a usermove in long algebraic notation over the Serial port
+//If no move is entered, then the computer thinks of a move on its own.
 void user_move(JN::Bitboard &bitboard){
   Serial.println("make move:");
   int *p, c[9];
@@ -109,8 +161,15 @@ void setup(){
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
     FastLED.setBrightness(  BRIGHTNESS );
     Serial.begin(115200);
-    while (!Serial);
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
     Serial.println("Initializing...");
+    if (esp_now_init() != 0) {
+        Serial.println("Error initializing ESP-NOW");
+        return;
+     }
+    esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
+    esp_now_register_recv_cb(OnDataRecv);     
     display_board(bitboard.get_board());
 
 }

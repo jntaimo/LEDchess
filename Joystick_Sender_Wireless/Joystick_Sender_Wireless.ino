@@ -152,17 +152,10 @@ void loop() {
       getDir(Dirs);
       //printXY();
       //printDir(Dirs);
-      esp_now_send(0, (uint8_t *) &Dirs, sizeof(Dirs));
+      //Only sends when the joystick is moved
+      if(Dirs.up || Dirs.down || Dirs.left || Dirs.right || Dirs.button) {
+        esp_now_send(0, (uint8_t *) &Dirs, sizeof(Dirs));
+      }
     }
   }
-//  if ((millis() - lastTime) > timerDelay) {
-//    // Set values to send
-//    test.x = random(1, 50);
-//    test.y = random(1, 50);
-//
-//    // Send message via ESP-NOW
-//    esp_now_send(0, (uint8_t *) &test, sizeof(test));
-//
-//    lastTime = millis();
-//  }
 }

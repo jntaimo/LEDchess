@@ -14,10 +14,6 @@
 
 // Structure example to receive data
 // Must match the sender structure
-//typedef struct test_struct {
-//    int x;
-//    int y;
-//} test_struct;
 typedef struct Directions{
   bool up;
   bool down;
@@ -25,10 +21,10 @@ typedef struct Directions{
   bool right;
   bool button;
 } Directions;
-// Create a struct_message called myData
-//test_struct myData;
+
 Directions Dirs {false, false, false, false, false}; 
 void printDir(Directions &Dirs){
+
   Serial.print("up ");
   Serial.print(Dirs.up);
   Serial.print(" down ");
@@ -44,10 +40,6 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
   memcpy(&Dirs, incomingData, sizeof(Dirs));
   Serial.print("Bytes received: ");
   Serial.println(len);
-//  Serial.print("x: ");
-//  Serial.println(myData.x);
-//  Serial.print("y: ");
-//  Serial.println(myData.y);
   printDir(Dirs);
   Serial.println();
 }
