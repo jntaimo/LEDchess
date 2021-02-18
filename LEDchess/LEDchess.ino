@@ -72,6 +72,7 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
 uint8_t move_selector(uint8_t &selector, Directions &Dirs){
     Serial.print("Selector index: ");
     Serial.println(selector);
+    //makes sure it's on the board
     if (Dirs.up && !((selector - 16) & 0x88)) selector -= 16;
     if (Dirs.down && !((selector + 16) & 0x88)) selector +=16;
     if (Dirs.left && !((selector - 1) & 0x88)) selector -= 1;
@@ -156,6 +157,62 @@ void user_move(JN::Bitboard &bitboard){
   }
 }
 
+void computer_move(JN::Bitboard &bitboard){
+    int score = bitboard.SearchPosition(bitboard._side, DEPTH, -10000, 10000 );
+    bitboard.make_move_best();
+    display_board(bitboard.get_board());
+    print_board(bitboard.get_board());
+    Serial.println();
+    Serial.print("move #");
+    Serial.println(bitboard.get_nummoves());
+    Serial.print("score: '");
+    Serial.print(score);
+    Serial.print("'\n");
+    Serial.print("best move: '");
+    Serial.print(JN::notation[bitboard.best_src]);
+    Serial.println(JN::notation[bitboard.best_dst]);
+}
+
+void joystick_move(JN::Bitboard &bitboard, Directions &Dirs, uint8_t &selector){
+    int src_sq = 0;
+    int dst_sq = 0;
+    uint8 piece = 0;
+    uint8_t *board = bitboard.get_board();
+    while (1){
+        while (!Dirs.button) delay(100);//wait for first button press
+        Serial.println("First button press");
+        Dirs.button = false;
+        piece = board[selector];
+        Serial.print("Source piece at: ");
+        Serial.println(JN::notation[selector]);
+        //piece exists and is on the same side
+        if (piece && (piece & bitboard._side)) src_sq = selector;
+        else continue; //restart if invalid square
+        while (!Dirs.button) delay(100);//wait for second button press
+        Serial.println("Second button press");
+        Dirs.button = false;
+        //piece exists and is on the same side
+        piece = board[selector];
+        Serial.print("Destination square at: ");
+        Serial.println(JN::notation[selector]);        
+        //No piece at destination
+        //Or opposite side piece
+        if (!piece || (piece & (24 - bitboard._side))) dst_sq = selector;
+        else continue;
+        if (bitboard.valid_move(src_sq, dst_sq)){
+            Serial.println("VALID MOVE");
+            Dirs.button = false;
+            Serial.println("Making move");
+            Serial.println(JN::notation[src_sq]);
+            Serial.println(JN::notation[dst_sq]);
+            bitboard.make_move(src_sq, dst_sq); 
+            return;   
+        }
+        Serial.println("invalid move");
+    }
+    
+
+}
 void setup(){
     delay(1000);
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -175,22 +232,11 @@ void setup(){
 }
 
 void loop(){
-    user_move(bitboard);
+    //user_move(bitboard);
+    joystick_move(bitboard, Dirs, selector);
     display_board(bitboard.get_board());
     print_board(bitboard.get_board());
     delay(100);
-    while(!Serial.available()) delay(100);
-    int score = bitboard.SearchPosition(bitboard._side, DEPTH, -10000, 10000 );
-    bitboard.make_move_best();
-    display_board(bitboard.get_board());
-    print_board(bitboard.get_board());
-    Serial.println();
-    Serial.print("move #");
-    Serial.println(bitboard.get_nummoves());
-    Serial.print("score: '");
-    Serial.print(score);
-    Serial.print("'\n");
-    Serial.print("best move: '");
-    Serial.print(JN::notation[bitboard.best_src]);
-    Serial.println(JN::notation[bitboard.best_dst]);
+    //while(!Serial.available()) delay(50);
+    computer_move(bitboard);
 }
