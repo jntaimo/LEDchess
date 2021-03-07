@@ -64,14 +64,14 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) {
   move_selector(selector, Dirs);
   display_board(bitboard.get_board());
   display_selector(selector);
-  Serial.print("Bytes received: ");
-  Serial.println(len);
-  printDir(Dirs);
-  Serial.println();
+  //Serial.print("Bytes received: ");
+  //Serial.println(len);
+  //printDir(Dirs);
+  //Serial.println();
 }
 uint8_t move_selector(uint8_t &selector, Directions &Dirs){
-    Serial.print("Selector index: ");
-    Serial.println(selector);
+    Serial.print("Selector square: ");
+    Serial.println(JN::notation[selector]);
     //makes sure it's on the board
     if (Dirs.up && !((selector - 16) & 0x88)) selector -= 16;
     if (Dirs.down && !((selector + 16) & 0x88)) selector +=16;
