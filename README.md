@@ -20,7 +20,7 @@ ___
   - [Contact](#contact)
 
 ## General info
-  This is a personal project funded through MIT's [ProjX] program that will be presented on March 8, 2021 at MIT's [Xfair]. This repository represents the code of the project; for more information about the design of the board and 3D models check out my website at jntaimo.com/projects/ledchess.
+  This is a personal project funded through MIT's [ProjX] program that was presented on March 8, 2021 at MIT's [Xfair]. This repository represents the code of the project; for more information about the design of the board and 3D models check out my website at jntaimo.com/projects/ledchess.
 
   The chessboard is run using an LED strip with 64 RGBW addressable LEDs, which come in different densities, thereby allowing compatibility with boards of various sizes. A [NodeMcu ESP8266][ESP8266] microcontroller sends the signals to each square based on an internal chessboard representation.
   
@@ -41,16 +41,16 @@ ___
 * Input moves over the serial connection
 * Run chess engine locally
 * Converts moves from long algebraic notation (e.g. e2e4 d7d6) to internal square notation
+* Allow two-player mode
+* Add animations for move selection
 ### To do:
 #### Basic:
-* Allow two-player mode
 * Allow one-player mode (with remote chess engine)
-* Add animations for move selection
 * Add animations for wins, loss, and startup
 * Change color profile
+* Input moves using wireless controller
 #### Advanced
 * Input
-  * Input moves using wireless controller
   * Input moves using keyboard over wifi
 * Output
   * Output to multiple displays at once
@@ -78,7 +78,7 @@ ___
 
 ## About me
 
-Welcome to the bottom of the page! You made it! My name is Joseph Ntaimo, and I'm a sophomore at MIT studying mechanical engineering and computer science. My primary interests include music technology (e.g.sound reactive LEDs) and hacking stuff together with microcontrollers. Additionaly, I DJ for my hall at MIT (Woah PUTZ!), and definitely plan on using this chessboard as a sound-reactive display once I get it all working.
+Welcome to the bottom of the page! You made it! My name is Joseph Ntaimo, and I'm a sophomore at MIT studying mechanical engineering and computer science. My primary interests include music technology (e.g.sound reactive LEDs) and hacking stuff together with microcontrollers. Additionaly, I DJ for my hall at MIT (Woah PUTZ!), and definitely plan on using this chessboard as a sound-reactive display.
 
 ## Contact
 Check out more about me and my projects at [jntaimo.com](http://www.jntaimo.com).
